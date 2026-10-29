@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tiket Gangguan - Helpdesk Jaringan Samsat</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/"><i class="bi bi-headset"></i> Helpdesk Jaringan Samsat</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/tickets.html">Tiket Gangguan</a></li>
+        </ul>
+        <span class="navbar-text me-3"><i class="bi bi-person-circle"></i> <span id="currentUser"></span></span>
+        <button class="btn btn-outline-light btn-sm" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-fluid py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <h1 class="h4 mb-0">Tiket Gangguan Jaringan</h1>
+      <button class="btn btn-danger" id="addBtn"><i class="bi bi-exclamation-triangle"></i> Lapor Gangguan</button>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="search" class="form-control" id="searchInput" placeholder="Cari kode tiket, judul, lokasi, atau pelapor...">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="btn-group w-100" role="group" id="statusFilter">
+              <button type="button" class="btn btn-outline-secondary active" data-status="">Semua</button>
+              <button type="button" class="btn btn-outline-danger" data-status="Baru">Baru</button>
+              <button type="button" class="btn btn-outline-warning" data-status="Diproses">Diproses</button>
+              <button type="button" class="btn btn-outline-success" data-status="Selesai">Selesai</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover table-sm">
+            <thead class="table-light">
+              <tr><th>Kode</th><th>Judul</th><th>Lokasi</th><th>Kategori</th><th>Prioritas</th><th>Status</th><th>Dilaporkan</th><th class="text-end">Aksi</th></tr>
+            </thead>
+            <tbody id="ticketTable"></tbody>
+          </table>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <small class="text-muted" id="pageInfo"></small>
+          <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal lapor gangguan -->
+  <div class="modal fade" id="formModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="ticketForm" novalidate>
+        <div class="modal-header"><h2 class="modal-title h5">Lapor Gangguan Jaringan</h2><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12"><label class="form-label">Judul Gangguan *</label>
+              <input class="form-control" name="judul" placeholder="Contoh: Internet mati sejak pagi"><div class="invalid-feedback"></div></div>
+            <div class="col-md-6"><label class="form-label">Lokasi *</label>
+              <select class="form-select" name="location_id" id="locationSelect"><option value="">Pilih lokasi...</option></select><div class="invalid-feedback"></div></div>
+            <div class="col-md-6"><label class="form-label">Nama Pelapor *</label>
+              <input class="form-control" name="pelapor"><div class="invalid-feedback"></div></div>
+            <div class="col-md-6"><label class="form-label">Kategori *</label>
+              <select class="form-select" name="kategori" id="kategoriSelect"><option value="">Pilih kategori...</option></select><div class="invalid-feedback"></div></div>
+            <div class="col-md-6"><label class="form-label">Prioritas *</label>
+              <select class="form-select" name="prioritas" id="prioritasSelect"><option value="">Pilih prioritas...</option></select><div class="invalid-feedback"></div></div>
+            <div class="col-12"><label class="form-label">Deskripsi</label>
+              <textarea class="form-control" name="deskripsi" rows="3" placeholder="Jelaskan gejala, sejak kapan, perangkat yang terdampak"></textarea><div class="invalid-feedback"></div></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-danger"><i class="bi bi-send"></i> Kirim Laporan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal detail tiket (admin dapat mengubah status) -->
+  <div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"><h2 class="modal-title h5" id="detailTitle">Detail Tiket</h2><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <table class="table table-sm mb-3"><tbody id="detailBody"></tbody></table>
+          <form id="statusForm" class="border-top pt-3 d-none" novalidate>
+            <h3 class="h6">Tindak Lanjut (Admin)</h3>
+            <div class="row g-2">
+              <div class="col-md-4"><label class="form-label">Status</label>
+                <select class="form-select" name="status" id="statusSelect"></select><div class="invalid-feedback"></div></div>
+              <div class="col-md-8"><label class="form-label">Catatan Penanganan</label>
+                <textarea class="form-control" name="catatan" id="catatanInput" rows="2"></textarea><div class="invalid-feedback"></div></div>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+              <button type="button" class="btn btn-outline-danger" id="deleteBtn"><i class="bi bi-trash"></i> Hapus Tiket</button>
+              <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan Status</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal konfirmasi hapus -->
+  <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h2 class="modal-title h5">Hapus Tiket</h2><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">Yakin ingin menghapus tiket <strong id="deleteName"></strong>? Data yang dihapus tidak dapat dikembalikan.</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn"><i class="bi bi-trash"></i> Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/tickets.js"></script>
+</body>
+</html>

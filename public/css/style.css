@@ -1,0 +1,18 @@
+body { background: #f4f6f9; }
+
+.login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.login-card { width: 100%; max-width: 380px; }
+
+.stat-card .stat-value { font-size: 2rem; font-weight: 700; }
+.stat-card .stat-label { color: #6c757d; font-size: .875rem; }
+
+.table td, .table th { vertical-align: middle; }
+.ticket-code { font-family: SFMono-Regular, Consolas, monospace; font-size: .85rem; }
+
+.status-baru     { background: #dc3545; }
+.status-diproses { background: #fd7e14; }
+.status-selesai  { background: #198754; }
+
+.prio-tinggi { color: #dc3545; font-weight: 600; }
+.prio-sedang { color: #fd7e14; }
+.prio-rendah { color: #6c757d; }
