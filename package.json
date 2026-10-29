@@ -1,0 +1,27 @@
+{
+  "name": "samsat-helpdesk",
+  "version": "1.0.0",
+  "description": "Helpdesk pelaporan gangguan jaringan lokasi Samsat (Node.js + Bootstrap + MySQL)",
+  "main": "src/server.js",
+  "author": "fajarBappenda <fajarBappenda@bappenda.gov.id>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon --legacy-watch src/server.js",
+    "test": "jest --verbose --runInBand"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "mysql2": "^3.11.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

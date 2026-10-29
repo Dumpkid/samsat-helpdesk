@@ -1,0 +1,46 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: samsat_helpdesk
+      MYSQL_USER: helpdesk
+      MYSQL_PASSWORD: helpdesk123
+      TZ: Asia/Jakarta
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Skrip *.sql dijalankan otomatis hanya saat volume masih kosong
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot123"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: helpdesk
+      DB_PASSWORD: helpdesk123
+      DB_NAME: samsat_helpdesk
+      SESSION_SECRET: ganti-dengan-string-acak
+      TZ: Asia/Jakarta
+    ports:
+      - "3002:3000"
+    volumes:
+      # Kode di-mount agar perubahan langsung terbaca nodemon (mode development)
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./tests:/app/tests
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
