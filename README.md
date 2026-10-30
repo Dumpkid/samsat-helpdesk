@@ -1,7 +1,6 @@
 # Helpdesk Gangguan Jaringan Samsat
 
 Aplikasi sederhana untuk melaporkan dan menangani gangguan jaringan di lokasi Samsat
-(daftar lokasi dari `daftar ip samsat.xlsx`, 83 lokasi).
 
 **Stack:** Node.js + Express · MySQL 8 · Bootstrap 5 + JavaScript · Chart.js · Docker Compose
 
